@@ -1,5 +1,6 @@
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
+var Dialogue = require('../prefabs/dialogue');
 
   function Intro() {}
   Intro.prototype = {
@@ -13,6 +14,11 @@ var FadingImage = require('../prefabs/fadingImage');
         this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.SPACEBAR]);
 
         this.addFadingImage('figure', 'intro-figure', 0, 0, 1);
+
+        this.style = {font: "12px Courier", fill: "#FFFFFF", align: "center"};
+
+        this.text = new Dialogue(this.game, 128, 0, "Text", this.style);
+        this.game.add.existing(this.text);
 
     },
     update: function() {

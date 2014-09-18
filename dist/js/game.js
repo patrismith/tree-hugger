@@ -19,7 +19,28 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/boot":3,"./states/credits":4,"./states/ending":5,"./states/gameover":6,"./states/intro":7,"./states/menu":8,"./states/play":9,"./states/preload":10,"./states/title":11}],2:[function(require,module,exports){
+},{"./states/boot":4,"./states/credits":5,"./states/ending":6,"./states/gameover":7,"./states/intro":8,"./states/menu":9,"./states/play":10,"./states/preload":11,"./states/title":12}],2:[function(require,module,exports){
+'use strict';
+
+var Dialogue = function(game, x, y, text, style) {
+  Phaser.Text.call(this, game, x, y, text, style);
+
+  // initialize your prefab here
+
+};
+
+Dialogue.prototype = Object.create(Phaser.Text.prototype);
+Dialogue.prototype.constructor = Dialogue;
+
+Dialogue.prototype.update = function() {
+
+  // write your prefab's specific update code here
+
+};
+
+module.exports = Dialogue;
+
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var FadingImage = function(game, x, y, name, frame) {
@@ -69,7 +90,7 @@ FadingImage.prototype.prevFrame = function () {
 
 module.exports = FadingImage;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 
 'use strict';
 
@@ -88,7 +109,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
   function Credits() {}
   Credits.prototype = {
@@ -116,7 +137,7 @@ module.exports = Boot;
   };
 module.exports = Credits;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
   function Ending() {}
   Ending.prototype = {
@@ -144,7 +165,7 @@ module.exports = Credits;
   };
 module.exports = Ending;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 'use strict';
 function GameOver() {}
@@ -172,9 +193,10 @@ GameOver.prototype = {
 };
 module.exports = GameOver;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
+var Dialogue = require('../prefabs/dialogue');
 
   function Intro() {}
   Intro.prototype = {
@@ -188,6 +210,11 @@ var FadingImage = require('../prefabs/fadingImage');
         this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.SPACEBAR]);
 
         this.addFadingImage('figure', 'intro-figure', 0, 0, 1);
+
+        this.style = {font: "12px Courier", fill: "#FFFFFF", align: "center"};
+
+        this.text = new Dialogue(this.game, 128, 0, "Text", this.style);
+        this.game.add.existing(this.text);
 
     },
     update: function() {
@@ -206,7 +233,7 @@ var FadingImage = require('../prefabs/fadingImage');
   };
 module.exports = Intro;
 
-},{"../prefabs/fadingImage":2}],8:[function(require,module,exports){
+},{"../prefabs/dialogue":2,"../prefabs/fadingImage":3}],9:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -238,7 +265,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
   'use strict';
   function Play() {}
@@ -265,7 +292,7 @@ module.exports = Menu;
   };
   
   module.exports = Play;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var AssetLoader = (function () {
@@ -321,7 +348,7 @@ Preload.prototype = {
   },
   update: function() {
     if(!!this.ready) {
-      this.game.state.start('title');
+      this.game.state.start('intro');
     }
   },
   onLoadComplete: function() {
@@ -331,7 +358,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
 
@@ -378,4 +405,4 @@ var FadingImage = require('../prefabs/fadingImage');
   };
 module.exports = Title;
 
-},{"../prefabs/fadingImage":2}]},{},[1])
+},{"../prefabs/fadingImage":3}]},{},[1])

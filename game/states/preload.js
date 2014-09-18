@@ -53,7 +53,7 @@ Preload.prototype = {
   },
   update: function() {
     if(!!this.ready) {
-      this.game.state.start('title');
+      this.game.state.start('intro');
     }
   },
   onLoadComplete: function() {
