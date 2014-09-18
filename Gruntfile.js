@@ -79,15 +79,15 @@ module.exports = function (grunt) {
               },
               files: [{
                   expand: true,
-                  cwd: 'assets',
+                  cwd: 'dist/assets/',
                   src: '**/*.png',
-                  dest: 'assets'
+                  dest: 'dist/assets'
               }]
           }
       }
   });
 
-  grunt.registerTask('build', ['buildBootstrapper', 'browserify', 'pngmin:dist', 'copy']);
+  grunt.registerTask('build', ['buildBootstrapper', 'browserify', 'copy', 'pngmin:dist']);
   grunt.registerTask('serve', ['build', 'connect:livereload', 'open', 'watch']);
   grunt.registerTask('default', ['serve']);
   grunt.registerTask('prod', ['build', 'copy']);
