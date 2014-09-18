@@ -24,7 +24,7 @@ Dialogue.prototype.addChar = function () {
 
 Dialogue.prototype.start = function () {
 
-    this.game.time.events.repeat(Phaser.Timer.SECOND * .1, 10, this.addChar, this);
+    this.game.time.events.repeat(Phaser.Timer.SECOND * .1, this.content.length, this.addChar, this);
 }
 
 module.exports = Dialogue;

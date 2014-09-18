@@ -1,6 +1,6 @@
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
-var Dialogue = require('../prefabs/dialogue');
+var Dialogues = require('../prefabs/dialogues');
 
   function Intro() {}
   Intro.prototype = {
@@ -17,10 +17,12 @@ var Dialogue = require('../prefabs/dialogue');
 
         this.style = {font: "12px Courier", fill: "#FFFFFF", align: "center"};
 
-        this.text = new Dialogue(this.game, 128, 0, "Text", this.style);
-        this.game.add.existing(this.text);
+        this.textList = ["This is some text.", "This is the next stuff."];
 
-        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.text.start, this.text);
+        this.dialogues = new Dialogues(this.game, this.textList, this.style);
+        this.game.add.existing(this.dialogues);
+
+        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.dialogues.start, this.dialogues);
 
     },
     update: function() {

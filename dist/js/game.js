@@ -19,7 +19,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/boot":4,"./states/credits":5,"./states/ending":6,"./states/gameover":7,"./states/intro":8,"./states/menu":9,"./states/play":10,"./states/preload":11,"./states/title":12}],2:[function(require,module,exports){
+},{"./states/boot":5,"./states/credits":6,"./states/ending":7,"./states/gameover":8,"./states/intro":9,"./states/menu":10,"./states/play":11,"./states/preload":12,"./states/title":13}],2:[function(require,module,exports){
 'use strict';
 
 var Dialogue = function(game, x, y, text, style) {
@@ -46,12 +46,42 @@ Dialogue.prototype.addChar = function () {
 
 Dialogue.prototype.start = function () {
 
-    this.game.time.events.repeat(Phaser.Timer.SECOND * .1, 10, this.addChar, this);
+    this.game.time.events.repeat(Phaser.Timer.SECOND * .1, this.content.length, this.addChar, this);
 }
 
 module.exports = Dialogue;
 
 },{}],3:[function(require,module,exports){
+'use strict';
+var Dialogue = require('../prefabs/dialogue.js');
+
+var Dialogues = function(game, textList, style, parent) {
+  Phaser.Group.call(this, game, parent);
+
+    for (var i = 0; i < textList.length; i++) {
+        var text = new Dialogue(this.game, 128, 0, textList[i], style);
+        this.add(text);
+    }
+};
+
+Dialogues.prototype = Object.create(Phaser.Group.prototype);
+Dialogues.prototype.constructor = Dialogues;
+
+Dialogues.prototype.update = function() {
+
+  // write your prefab's specific update code here
+
+};
+
+Dialogues.prototype.start = function() {
+
+    this.getAt(0).start.call(this.getAt(0));
+
+};
+
+module.exports = Dialogues;
+
+},{"../prefabs/dialogue.js":2}],4:[function(require,module,exports){
 'use strict';
 
 var FadingImage = function(game, x, y, name, frame) {
@@ -101,7 +131,7 @@ FadingImage.prototype.prevFrame = function () {
 
 module.exports = FadingImage;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 
 'use strict';
 
@@ -120,7 +150,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
   function Credits() {}
   Credits.prototype = {
@@ -148,7 +178,7 @@ module.exports = Boot;
   };
 module.exports = Credits;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
   function Ending() {}
   Ending.prototype = {
@@ -176,7 +206,7 @@ module.exports = Credits;
   };
 module.exports = Ending;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 'use strict';
 function GameOver() {}
@@ -204,10 +234,10 @@ GameOver.prototype = {
 };
 module.exports = GameOver;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
-var Dialogue = require('../prefabs/dialogue');
+var Dialogues = require('../prefabs/dialogues');
 
   function Intro() {}
   Intro.prototype = {
@@ -224,10 +254,12 @@ var Dialogue = require('../prefabs/dialogue');
 
         this.style = {font: "12px Courier", fill: "#FFFFFF", align: "center"};
 
-        this.text = new Dialogue(this.game, 128, 0, "Text", this.style);
-        this.game.add.existing(this.text);
+        this.textList = ["This is some text.", "This is the next stuff."];
 
-        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.text.start, this.text);
+        this.dialogues = new Dialogues(this.game, this.textList, this.style);
+        this.game.add.existing(this.dialogues);
+
+        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.dialogues.start, this.dialogues);
 
     },
     update: function() {
@@ -246,7 +278,7 @@ var Dialogue = require('../prefabs/dialogue');
   };
 module.exports = Intro;
 
-},{"../prefabs/dialogue":2,"../prefabs/fadingImage":3}],9:[function(require,module,exports){
+},{"../prefabs/dialogues":3,"../prefabs/fadingImage":4}],10:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -278,7 +310,7 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
   'use strict';
   function Play() {}
@@ -305,7 +337,7 @@ module.exports = Menu;
   };
   
   module.exports = Play;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 var AssetLoader = (function () {
@@ -371,7 +403,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
 
@@ -418,4 +450,4 @@ var FadingImage = require('../prefabs/fadingImage');
   };
 module.exports = Title;
 
-},{"../prefabs/fadingImage":3}]},{},[1])
+},{"../prefabs/fadingImage":4}]},{},[1])
