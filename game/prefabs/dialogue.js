@@ -1,10 +1,11 @@
 'use strict';
 
 var Dialogue = function(game, x, y, text, style) {
-  Phaser.Text.call(this, game, x, y, text, style);
+  Phaser.Text.call(this, game, x, y, '', style);
 
-  // initialize your prefab here
-
+  this.content = text;
+  this.char = 0;
+  //this.addChar();
 };
 
 Dialogue.prototype = Object.create(Phaser.Text.prototype);
@@ -12,8 +13,18 @@ Dialogue.prototype.constructor = Dialogue;
 
 Dialogue.prototype.update = function() {
 
-  // write your prefab's specific update code here
+};
+
+Dialogue.prototype.addChar = function () {
+
+    this.char++;
+    this.setText(this.content.substring(0, this.char));
 
 };
+
+Dialogue.prototype.start = function () {
+
+    this.game.time.events.repeat(Phaser.Timer.SECOND * .1, 10, this.addChar, this);
+}
 
 module.exports = Dialogue;

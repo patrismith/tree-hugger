@@ -20,6 +20,8 @@ var Dialogue = require('../prefabs/dialogue');
         this.text = new Dialogue(this.game, 128, 0, "Text", this.style);
         this.game.add.existing(this.text);
 
+        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.text.start, this.text);
+
     },
     update: function() {
       // state update code
