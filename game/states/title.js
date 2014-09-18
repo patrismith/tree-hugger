@@ -39,7 +39,7 @@ var FadingImage = require('../prefabs/fadingImage');
       // (i.e. you switch to another state from this one).
     },
     nextState: function () {
-        this.game.state.start('play');
+        this.game.state.start('intro');
     }
   };
 module.exports = Title;

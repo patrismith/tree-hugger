@@ -1,13 +1,19 @@
 'use strict';
+var FadingImage = require('../prefabs/fadingImage');
+
   function Intro() {}
   Intro.prototype = {
-    preload: function() {
-      // Override this method to add some load operations. 
-      // If you need to use the loader, you may need to use them here.
+      // TODO: a lot here is duplicated from title.js
+    addFadingImage: function (key, name, x, y, time) {
+        this[key] = new FadingImage(this.game, x, y, name, 0);
+        this.game.add.existing(this[key]);
+        this.game.time.events.add(Phaser.Timer.SECOND * time, this[key].fadeIn, this[key]);
     },
     create: function() {
-      // This method is called after the game engine successfully switches states. 
-      // Feel free to add any setup code here (do not load anything here, override preload() instead).
+        this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.SPACEBAR]);
+
+        this.addFadingImage('figure', 'intro-figure', 0, 0, 1);
+
     },
     update: function() {
       // state update code
@@ -19,7 +25,7 @@
       // Put render operations here.
     },
     shutdown: function() {
-      // This method will be called when the state is shut down 
+      // This method will be called when the state is shut down
       // (i.e. you switch to another state from this one).
     }
   };

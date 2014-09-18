@@ -174,15 +174,21 @@ module.exports = GameOver;
 
 },{}],7:[function(require,module,exports){
 'use strict';
+var FadingImage = require('../prefabs/fadingImage');
+
   function Intro() {}
   Intro.prototype = {
-    preload: function() {
-      // Override this method to add some load operations. 
-      // If you need to use the loader, you may need to use them here.
+      // TODO: a lot here is duplicated from title.js
+    addFadingImage: function (key, name, x, y, time) {
+        this[key] = new FadingImage(this.game, x, y, name, 0);
+        this.game.add.existing(this[key]);
+        this.game.time.events.add(Phaser.Timer.SECOND * time, this[key].fadeIn, this[key]);
     },
     create: function() {
-      // This method is called after the game engine successfully switches states. 
-      // Feel free to add any setup code here (do not load anything here, override preload() instead).
+        this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.SPACEBAR]);
+
+        this.addFadingImage('figure', 'intro-figure', 0, 0, 1);
+
     },
     update: function() {
       // state update code
@@ -194,13 +200,13 @@ module.exports = GameOver;
       // Put render operations here.
     },
     shutdown: function() {
-      // This method will be called when the state is shut down 
+      // This method will be called when the state is shut down
       // (i.e. you switch to another state from this one).
     }
   };
 module.exports = Intro;
 
-},{}],8:[function(require,module,exports){
+},{"../prefabs/fadingImage":2}],8:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -305,7 +311,8 @@ Preload.prototype = {
     this.load.setPreloadSprite(this.asset);
     var sprites = [ { name: 'title-tree', w: 144, h: 224, frames: 3 },
                     { name: 'title-treehugger', w: 160, h: 40, frames: 3 },
-                    { name: 'title-pressspace', w: 88, h: 16, frames: 3 } ];
+                    { name: 'title-pressspace', w: 88, h: 16, frames: 3 },
+                    { name: 'intro-figure', w: 256, h: 224, frames: 3 } ];
     AssetLoader.loadSprites.call(this, sprites);
 
   },
@@ -366,7 +373,7 @@ var FadingImage = require('../prefabs/fadingImage');
       // (i.e. you switch to another state from this one).
     },
     nextState: function () {
-        this.game.state.start('play');
+        this.game.state.start('intro');
     }
   };
 module.exports = Title;
