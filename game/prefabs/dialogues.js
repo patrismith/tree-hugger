@@ -8,6 +8,9 @@ var Dialogues = function(game, textList, style, parent) {
         var text = new Dialogue(this.game, 128, 0, textList[i], style);
         this.add(text);
     }
+
+    this.currentDialogue = 0;
+
 };
 
 Dialogues.prototype = Object.create(Phaser.Group.prototype);
@@ -15,14 +18,26 @@ Dialogues.prototype.constructor = Dialogues;
 
 Dialogues.prototype.update = function() {
 
-  // write your prefab's specific update code here
+    if (this.getAt(this.currentDialogue).isComplete && this.currentDialogue < this.length) {
+        this.currentDialogue++;
+        this.start();
+    }
 
 };
 
 Dialogues.prototype.start = function() {
 
-    this.getAt(0).start.call(this.getAt(0));
+    this.getAt(this.currentDialogue).start.call(this.getAt(this.currentDialogue));
 
+};
+
+Dialogues.prototype.nextText = function () {
+    this.getAt(0).setText('');
+    console.log(this.getAt(0));
+    console.log(this.getAt(1));
+    console.log(this.children);
+    console.log(this);
+    this.getAt(1).start.call(this.getAt(1));
 };
 
 module.exports = Dialogues;

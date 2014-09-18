@@ -28,6 +28,7 @@ var Dialogue = function(game, x, y, text, style) {
   this.content = text;
   this.char = 0;
   //this.addChar();
+  this.complete = false;
 };
 
 Dialogue.prototype = Object.create(Phaser.Text.prototype);
@@ -37,17 +38,30 @@ Dialogue.prototype.update = function() {
 
 };
 
+Dialogue.prototype.isComplete = function () {
+    this.complete = true;
+};
+
 Dialogue.prototype.addChar = function () {
 
     this.char++;
-    this.setText(this.content.substring(0, this.char));
+
+    if (this.char > this.content.length) {
+
+        this.game.time.events.add(Phaser.Timer.SECOND * 1, this.isComplete, this);
+
+    } else {
+
+        this.setText(this.content.substring(0, this.char));
+
+    }
 
 };
 
 Dialogue.prototype.start = function () {
 
-    this.game.time.events.repeat(Phaser.Timer.SECOND * .1, this.content.length, this.addChar, this);
-}
+    this.game.time.events.repeat(Phaser.Timer.SECOND * .1, this.content.length + 1, this.addChar, this);
+};
 
 module.exports = Dialogue;
 
@@ -62,6 +76,9 @@ var Dialogues = function(game, textList, style, parent) {
         var text = new Dialogue(this.game, 128, 0, textList[i], style);
         this.add(text);
     }
+
+    this.currentDialogue = 0;
+
 };
 
 Dialogues.prototype = Object.create(Phaser.Group.prototype);
@@ -69,14 +86,26 @@ Dialogues.prototype.constructor = Dialogues;
 
 Dialogues.prototype.update = function() {
 
-  // write your prefab's specific update code here
+    if (this.getAt(this.currentDialogue).isComplete && this.currentDialogue < this.length) {
+        this.currentDialogue++;
+        this.start();
+    }
 
 };
 
 Dialogues.prototype.start = function() {
 
-    this.getAt(0).start.call(this.getAt(0));
+    this.getAt(this.currentDialogue).start.call(this.getAt(this.currentDialogue));
 
+};
+
+Dialogues.prototype.nextText = function () {
+    this.getAt(0).setText('');
+    console.log(this.getAt(0));
+    console.log(this.getAt(1));
+    console.log(this.children);
+    console.log(this);
+    this.getAt(1).start.call(this.getAt(1));
 };
 
 module.exports = Dialogues;
