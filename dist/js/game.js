@@ -50,7 +50,7 @@ Dialogue.prototype.addChar = function () {
 
     if (this.char > this.content.length) {
 
-        this.game.time.events.add(Phaser.Timer.SECOND * 1, this.isComplete, this);
+        this.game.time.events.add(Phaser.Timer.SECOND * 1.5, this.isComplete, this);
 
     } else {
 
