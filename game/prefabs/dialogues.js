@@ -4,11 +4,10 @@ var Dialogue = require('../prefabs/dialogue.js');
 var Dialogues = function(game, textList, style, parent) {
   Phaser.Group.call(this, game, parent);
 
-    for (var i = 0; i < textList.length; i++) {
-        var text = new Dialogue(this.game, 128, 0, textList[i], style);
-        this.add(text);
-    }
+    var text = new Dialogue(this.game, 128, 0, textList[0], style);
+    this.add(text);
 
+    this.textList = textList;
     this.currentDialogue = 0;
 
 };

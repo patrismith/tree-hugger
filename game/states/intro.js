@@ -1,6 +1,6 @@
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
-var Dialogues = require('../prefabs/dialogues');
+var Dialogue = require('../prefabs/dialogue');
 
   function Intro() {}
   Intro.prototype = {
@@ -15,14 +15,16 @@ var Dialogues = require('../prefabs/dialogues');
 
         this.addFadingImage('figure', 'intro-figure', 0, 0, 1);
 
-        this.style = {font: "12px Courier", fill: "#FFFFFF", align: "center"};
+        this.style = {font: "12px Courier", fill: "#FFFFFF", align: "left"};
 
-        this.textList = ["This is some text.", "This is the next stuff."];
+        this.textList = ["I was supposed to be\nretired.\n        \nBut then, it\nhappened.\n        \nCode Red.",
+                         "Animals, overcome\nwith negative\nemotions...",
+                         "This job's too\ndangerous for your\ntypical animal\ntherapist.\nOf course."];
 
-        this.dialogues = new Dialogues(this.game, this.textList, this.style);
-        this.game.add.existing(this.dialogues);
+        this.dialogue = new Dialogue(this.game, 104, 0, this.style, this.textList);
+        this.game.add.existing(this.dialogue);
 
-        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.dialogues.start, this.dialogues);
+        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.dialogue.start, this.dialogue);
 
     },
     update: function() {
