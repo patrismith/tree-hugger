@@ -7,6 +7,7 @@ var Dialogue = function(game, x, y, style, textList) {
   this.currentText = 0;
   this.content = '';
   this.char = 0;
+  this.finished = false;
 };
 
 Dialogue.prototype = Object.create(Phaser.Text.prototype);
@@ -20,6 +21,8 @@ Dialogue.prototype.isComplete = function () {
     this.currentText++;
     if (this.currentText < this.textList.length) {
         this.start();
+    } else {
+        this.finished = true;
     }
 };
 

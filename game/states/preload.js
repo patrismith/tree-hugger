@@ -44,7 +44,8 @@ Preload.prototype = {
     var sprites = [ { name: 'title-tree', w: 144, h: 224, frames: 3 },
                     { name: 'title-treehugger', w: 160, h: 40, frames: 3 },
                     { name: 'title-pressspace', w: 88, h: 16, frames: 3 },
-                    { name: 'intro-figure', w: 256, h: 224, frames: 3 } ];
+                    { name: 'intro-figure', w: 256, h: 224, frames: 3 },
+                    { name: 'player', w: 24, h: 32, frames: 6 } ];
     AssetLoader.loadSprites.call(this, sprites);
 
   },
@@ -53,7 +54,7 @@ Preload.prototype = {
   },
   update: function() {
     if(!!this.ready) {
-      this.game.state.start('intro');
+      this.game.state.start('level');
     }
   },
   onLoadComplete: function() {

@@ -25,7 +25,16 @@ var Dialogue = require('../prefabs/dialogue');
         this.game.add.existing(this.dialogue);
 
         this.game.time.events.add(Phaser.Timer.SECOND * 2, this.dialogue.start, this.dialogue);
-
+        var key = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        key.onDown.add(this.isDialogueOver, this);
+    },
+    isDialogueOver: function() {
+        if (this.dialogue.finished) {
+            this.endState();
+        }
+    },
+    endState: function() {
+        this.game.state.start('level');
     },
     update: function() {
       // state update code

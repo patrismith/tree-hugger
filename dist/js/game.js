@@ -9,17 +9,15 @@ window.onload = function () {
   game.state.add('boot', require('./states/boot'));
   game.state.add('credits', require('./states/credits'));
   game.state.add('ending', require('./states/ending'));
-  game.state.add('gameover', require('./states/gameover'));
   game.state.add('intro', require('./states/intro'));
-  game.state.add('menu', require('./states/menu'));
-  game.state.add('play', require('./states/play'));
+  game.state.add('level', require('./states/level'));
   game.state.add('preload', require('./states/preload'));
   game.state.add('title', require('./states/title'));
   
 
   game.state.start('boot');
 };
-},{"./states/boot":4,"./states/credits":5,"./states/ending":6,"./states/gameover":7,"./states/intro":8,"./states/menu":9,"./states/play":10,"./states/preload":11,"./states/title":12}],2:[function(require,module,exports){
+},{"./states/boot":5,"./states/credits":6,"./states/ending":7,"./states/intro":8,"./states/level":9,"./states/preload":10,"./states/title":11}],2:[function(require,module,exports){
 'use strict';
 
 var Dialogue = function(game, x, y, style, textList) {
@@ -29,6 +27,7 @@ var Dialogue = function(game, x, y, style, textList) {
   this.currentText = 0;
   this.content = '';
   this.char = 0;
+  this.finished = false;
 };
 
 Dialogue.prototype = Object.create(Phaser.Text.prototype);
@@ -42,6 +41,8 @@ Dialogue.prototype.isComplete = function () {
     this.currentText++;
     if (this.currentText < this.textList.length) {
         this.start();
+    } else {
+        this.finished = true;
     }
 };
 
@@ -121,6 +122,86 @@ FadingImage.prototype.prevFrame = function () {
 module.exports = FadingImage;
 
 },{}],4:[function(require,module,exports){
+'use strict';
+
+var Player = function(game, x, y, frame) {
+    Phaser.Sprite.call(this, game, x, y, 'player', frame);
+    this.anchor.setTo(0.5,0.5);
+    this.game.physics.arcade.enableBody(this);
+    this.body.allowGravity = false;
+    this.body.collideWorldBounds = true;
+    this.animations.add('faceRight', [0]);
+    this.animations.add('faceLeft', [5]);
+    this.animations.add('walkRight', [1,2]);
+    this.animations.add('walkLeft', [3,4]);
+    this.action = 'idle';
+};
+
+Player.prototype = Object.create(Phaser.Sprite.prototype);
+Player.prototype.constructor = Player;
+
+Player.prototype.update = function() {
+
+};
+
+Player.prototype.walkRight = function() {
+    this.animations.play('walkRight', 10, true);
+    this.body.velocity.x = 75;
+};
+
+Player.prototype.walkLeft = function() {
+    this.animations.play('walkLeft', 10, true);
+    this.body.velocity.x = -75;
+};
+
+Player.prototype.walkUp = function() {
+    if (this.facingRight()) {
+        this.animations.play('walkRight');
+    } else if (this.facingLeft()) {
+        this.animations.play('walkLeft');
+    }
+    this.body.velocity.y = -75;
+};
+
+Player.prototype.walkDown = function() {
+    if (this.facingRight()) {
+        this.animations.play('walkRight');
+    } else if (this.facingLeft()) {
+        this.animations.play('walkLeft');
+    }
+    this.body.velocity.y = 75;
+
+};
+
+Player.prototype.facingRight = function() {
+    return this.animations.currentAnim.name === 'faceRight' ||
+        this.animations.currentAnim.name === 'walkRight';
+};
+
+Player.prototype.facingLeft = function() {
+    return this.animations.currentAnim.name === 'faceLeft' ||
+        this.animations.currentAnim.name === 'walkLeft';
+};
+
+Player.prototype.stopAnimation = function () {
+    if (this.facingRight()) {
+        this.animations.play('faceRight');
+    } else if (this.facingLeft()) {
+        this.animations.play('faceLeft');
+    }
+};
+
+Player.prototype.stopX = function() {
+    this.body.velocity.x = 0;
+};
+
+Player.prototype.stopY = function() {
+    this.body.velocity.y = 0;
+};
+
+module.exports = Player;
+
+},{}],5:[function(require,module,exports){
 
 'use strict';
 
@@ -139,7 +220,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
   function Credits() {}
   Credits.prototype = {
@@ -167,7 +248,7 @@ module.exports = Boot;
   };
 module.exports = Credits;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
   function Ending() {}
   Ending.prototype = {
@@ -194,34 +275,6 @@ module.exports = Credits;
     }
   };
 module.exports = Ending;
-
-},{}],7:[function(require,module,exports){
-
-'use strict';
-function GameOver() {}
-
-GameOver.prototype = {
-  preload: function () {
-
-  },
-  create: function () {
-    var style = { font: '65px Arial', fill: '#ffffff', align: 'center'};
-    this.titleText = this.game.add.text(this.game.world.centerX,100, 'Game Over!', style);
-    this.titleText.anchor.setTo(0.5, 0.5);
-
-    this.congratsText = this.game.add.text(this.game.world.centerX, 200, 'You Win!', { font: '32px Arial', fill: '#ffffff', align: 'center'});
-    this.congratsText.anchor.setTo(0.5, 0.5);
-
-    this.instructionText = this.game.add.text(this.game.world.centerX, 300, 'Click To Play Again', { font: '16px Arial', fill: '#ffffff', align: 'center'});
-    this.instructionText.anchor.setTo(0.5, 0.5);
-  },
-  update: function () {
-    if(this.game.input.activePointer.justPressed()) {
-      this.game.state.start('play');
-    }
-  }
-};
-module.exports = GameOver;
 
 },{}],8:[function(require,module,exports){
 'use strict';
@@ -251,7 +304,16 @@ var Dialogue = require('../prefabs/dialogue');
         this.game.add.existing(this.dialogue);
 
         this.game.time.events.add(Phaser.Timer.SECOND * 2, this.dialogue.start, this.dialogue);
-
+        var key = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        key.onDown.add(this.isDialogueOver, this);
+    },
+    isDialogueOver: function() {
+        if (this.dialogue.finished) {
+            this.endState();
+        }
+    },
+    endState: function() {
+        this.game.state.start('level');
     },
     update: function() {
       // state update code
@@ -270,65 +332,52 @@ var Dialogue = require('../prefabs/dialogue');
 module.exports = Intro;
 
 },{"../prefabs/dialogue":2,"../prefabs/fadingImage":3}],9:[function(require,module,exports){
-
 'use strict';
-function Menu() {}
+var Player = require('../prefabs/player');
 
-Menu.prototype = {
-  preload: function() {
-
-  },
-  create: function() {
-    var style = { font: '65px Arial', fill: '#ffffff', align: 'center'};
-    this.sprite = this.game.add.sprite(this.game.world.centerX, 138, 'yeoman');
-    this.sprite.anchor.setTo(0.5, 0.5);
-
-    this.titleText = this.game.add.text(this.game.world.centerX, 300, '\'Allo, \'Allo!', style);
-    this.titleText.anchor.setTo(0.5, 0.5);
-
-    this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play "Click The Yeoman Logo"', { font: '16px Arial', fill: '#ffffff', align: 'center'});
-    this.instructionsText.anchor.setTo(0.5, 0.5);
-
-    this.sprite.angle = -20;
-    this.game.add.tween(this.sprite).to({angle: 20}, 1000, Phaser.Easing.Linear.NONE, true, 0, 1000, true);
-  },
-  update: function() {
-    if(this.game.input.activePointer.justPressed()) {
-      this.game.state.start('play');
-    }
-  }
-};
-
-module.exports = Menu;
-
-},{}],10:[function(require,module,exports){
-
-  'use strict';
-  function Play() {}
-  Play.prototype = {
+  function Level() {}
+  Level.prototype = {
     create: function() {
-      this.game.physics.startSystem(Phaser.Physics.ARCADE);
-      this.sprite = this.game.add.sprite(this.game.width/2, this.game.height/2, 'yeoman');
-      this.sprite.inputEnabled = true;
-      
-      this.game.physics.arcade.enable(this.sprite);
-      this.sprite.body.collideWorldBounds = true;
-      this.sprite.body.bounce.setTo(1,1);
-      this.sprite.body.velocity.x = this.game.rnd.integerInRange(-500,500);
-      this.sprite.body.velocity.y = this.game.rnd.integerInRange(-500,500);
+        this.player = new Player(this.game, 50, 50);
+        this.game.add.existing(this.player);
 
-      this.sprite.events.onInputDown.add(this.clickListener, this);
+        this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
+
+        this.cursors = this.game.input.keyboard.createCursorKeys();
     },
     update: function() {
 
+        if (this.cursors.right.isDown) {
+            this.player.walkRight();
+        } else if (this.cursors.left.isDown) {
+            this.player.walkLeft();
+        } else {
+            this.player.stopX();
+        }
+        if (this.cursors.up.isDown) {
+            this.player.walkUp();
+        } else if (this.cursors.down.isDown) {
+            this.player.walkDown();
+        } else {
+            this.player.stopY();
+        }
+        if (!this.cursors.right.isDown &&
+            !this.cursors.left.isDown &&
+            !this.cursors.up.isDown &&
+            !this.cursors.down.isDown) {
+            this.player.stopAnimation();
+        }
     },
-    clickListener: function() {
-      this.game.state.start('gameover');
+    paused: function() {
+    },
+    render: function() {
+    },
+    shutdown: function() {
     }
   };
-  
-  module.exports = Play;
-},{}],11:[function(require,module,exports){
+module.exports = Level;
+
+},{"../prefabs/player":4}],10:[function(require,module,exports){
 'use strict';
 
 var AssetLoader = (function () {
@@ -375,7 +424,8 @@ Preload.prototype = {
     var sprites = [ { name: 'title-tree', w: 144, h: 224, frames: 3 },
                     { name: 'title-treehugger', w: 160, h: 40, frames: 3 },
                     { name: 'title-pressspace', w: 88, h: 16, frames: 3 },
-                    { name: 'intro-figure', w: 256, h: 224, frames: 3 } ];
+                    { name: 'intro-figure', w: 256, h: 224, frames: 3 },
+                    { name: 'player', w: 24, h: 32, frames: 6 } ];
     AssetLoader.loadSprites.call(this, sprites);
 
   },
@@ -384,7 +434,7 @@ Preload.prototype = {
   },
   update: function() {
     if(!!this.ready) {
-      this.game.state.start('intro');
+      this.game.state.start('level');
     }
   },
   onLoadComplete: function() {
@@ -394,7 +444,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
 
