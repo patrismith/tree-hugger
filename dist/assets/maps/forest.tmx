@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="64" height="28" tilewidth="8" tileheight="8">
+ <tileset firstgid="1" name="forest" tilewidth="8" tileheight="8">
+  <image source="forest.png" width="128" height="128"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="64" height="28">
+  <data encoding="base64" compression="zlib">
+   eJzt1TkOwjAQRmGHtWavISw1ew2BA4DI/a/CK6NIliWEx4X/4tPIb9y4cuGc66CLHvqNc7sPUPypD413vj7CGBNMMWuc233uuf9LXxjvfH2JFUqsscHWoO+Md76+xwFHnHDGxaBfjXe+fsM94/nCO+NZiUi2HnhGnKnfF/JBHXGmfl9I7P819ftC9L+KiIiIiIhIDr69f7QE
+  </data>
+ </layer>
+</map>

@@ -10,7 +10,6 @@ var Player = function(game, x, y, frame) {
     this.animations.add('faceLeft', [5]);
     this.animations.add('walkRight', [1,2]);
     this.animations.add('walkLeft', [3,4]);
-    this.action = 'idle';
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);

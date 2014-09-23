@@ -17,7 +17,29 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/boot":5,"./states/credits":6,"./states/ending":7,"./states/intro":8,"./states/level":9,"./states/preload":10,"./states/title":11}],2:[function(require,module,exports){
+},{"./states/boot":6,"./states/credits":7,"./states/ending":8,"./states/intro":9,"./states/level":10,"./states/preload":11,"./states/title":12}],2:[function(require,module,exports){
+'use strict';
+
+var Bear = function(game, x, y, frame) {
+    Phaser.Sprite.call(this, game, x, y, 'bear', frame);
+    this.anchor.setTo(0.5,0.5);
+    this.game.physics.arcade.enableBody(this);
+    this.body.allowGravity = false;
+    this.body.collideWorldBounds = true;
+    this.animations.add('runRight', [0, 1]);
+    this.animations.add('runLeft', [2, 3]);
+};
+
+Bear.prototype = Object.create(Phaser.Sprite.prototype);
+Bear.prototype.constructor = Bear;
+
+Bear.prototype.update = function() {
+
+};
+
+module.exports = Bear;
+
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var Dialogue = function(game, x, y, style, textList) {
@@ -71,7 +93,7 @@ Dialogue.prototype.start = function () {
 
 module.exports = Dialogue;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var FadingImage = function(game, x, y, name, frame) {
@@ -121,7 +143,7 @@ FadingImage.prototype.prevFrame = function () {
 
 module.exports = FadingImage;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 var Player = function(game, x, y, frame) {
@@ -134,7 +156,6 @@ var Player = function(game, x, y, frame) {
     this.animations.add('faceLeft', [5]);
     this.animations.add('walkRight', [1,2]);
     this.animations.add('walkLeft', [3,4]);
-    this.action = 'idle';
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -201,7 +222,7 @@ Player.prototype.stopY = function() {
 
 module.exports = Player;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 'use strict';
 
@@ -220,7 +241,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
   function Credits() {}
   Credits.prototype = {
@@ -248,7 +269,7 @@ module.exports = Boot;
   };
 module.exports = Credits;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
   function Ending() {}
   Ending.prototype = {
@@ -276,7 +297,7 @@ module.exports = Credits;
   };
 module.exports = Ending;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
 var Dialogue = require('../prefabs/dialogue');
@@ -331,21 +352,37 @@ var Dialogue = require('../prefabs/dialogue');
   };
 module.exports = Intro;
 
-},{"../prefabs/dialogue":2,"../prefabs/fadingImage":3}],9:[function(require,module,exports){
+},{"../prefabs/dialogue":3,"../prefabs/fadingImage":4}],10:[function(require,module,exports){
 'use strict';
 var Player = require('../prefabs/player');
+var Bear = require('../prefabs/bear');
 
   function Level() {}
   Level.prototype = {
     create: function() {
+
+        this.map = this.game.add.tilemap('forest');
+        this.map.addTilesetImage('forest');
+        this.layer = this.map.createLayer(0);
+        this.layer.resizeWorld();
+        this.map.setCollisionByExclusion([49, 50, 51, 52, 53, 54, 55,
+                                          65, 66, 67, 68, 69,
+                                          81, 82, 83, 84, 85]);
+
         this.player = new Player(this.game, 50, 50);
         this.game.add.existing(this.player);
+        this.game.camera.follow(this.player);
+
+        this.bear = new Bear(this.game, 100, 100);
+        this.game.add.existing(this.bear);
 
         this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
     },
     update: function() {
+
+        this.game.physics.arcade.collide(this.player, this.layer);
 
         if (this.cursors.right.isDown) {
             this.player.walkRight();
@@ -377,7 +414,7 @@ var Player = require('../prefabs/player');
   };
 module.exports = Level;
 
-},{"../prefabs/player":4}],10:[function(require,module,exports){
+},{"../prefabs/bear":2,"../prefabs/player":5}],11:[function(require,module,exports){
 'use strict';
 
 var AssetLoader = (function () {
@@ -400,11 +437,18 @@ var AssetLoader = (function () {
                                   'assets/sprites/' + list[i].name + '.png',
                                   list[i].w, list[i].h, list[i].frames);
         }
-    }
+    };
+
+    function loadMaps (list) {
+        for (var i = 0; i < list.length; i++) {
+            this.load.tilemap(list[i], 'assets/maps/' + list[i] + '.json', null, Phaser.Tilemap.TILED_JSON);
+        }
+    };
 
     return { loadImages: loadImages,
              loadSprites: loadSprites,
-             loadAudio: loadAudio };
+             loadAudio: loadAudio,
+             loadMaps: loadMaps };
 
 })();
 
@@ -425,9 +469,13 @@ Preload.prototype = {
                     { name: 'title-treehugger', w: 160, h: 40, frames: 3 },
                     { name: 'title-pressspace', w: 88, h: 16, frames: 3 },
                     { name: 'intro-figure', w: 256, h: 224, frames: 3 },
-                    { name: 'player', w: 24, h: 32, frames: 6 } ];
+                    { name: 'player', w: 24, h: 32, frames: 6 },
+                    { name: 'bear', w: 32, h: 24, frames: 4 } ];
+    var images = [ 'forest' ];
+    var maps = [ 'forest' ];
     AssetLoader.loadSprites.call(this, sprites);
-
+    AssetLoader.loadImages.call(this, images);
+    AssetLoader.loadMaps.call(this, maps);
   },
   create: function() {
     this.asset.cropEnabled = false;
@@ -444,7 +492,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
 
@@ -491,4 +539,4 @@ var FadingImage = require('../prefabs/fadingImage');
   };
 module.exports = Title;
 
-},{"../prefabs/fadingImage":3}]},{},[1])
+},{"../prefabs/fadingImage":4}]},{},[1])
