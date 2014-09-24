@@ -17,7 +17,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/boot":6,"./states/credits":7,"./states/ending":8,"./states/intro":9,"./states/level":10,"./states/preload":11,"./states/title":12}],2:[function(require,module,exports){
+},{"./states/boot":7,"./states/credits":8,"./states/ending":9,"./states/intro":10,"./states/level":11,"./states/preload":12,"./states/title":13}],2:[function(require,module,exports){
 'use strict';
 
 var Bear = function(game, x, y, frame) {
@@ -26,8 +26,8 @@ var Bear = function(game, x, y, frame) {
     this.game.physics.arcade.enableBody(this);
     this.body.allowGravity = false;
     this.body.collideWorldBounds = true;
-    this.animations.add('runRight', [0, 1]);
-    this.animations.add('runLeft', [2, 3]);
+    this.animations.add('walkRight', [0, 1]);
+    this.animations.add('walkLeft', [2, 3]);
 };
 
 Bear.prototype = Object.create(Phaser.Sprite.prototype);
@@ -37,9 +37,84 @@ Bear.prototype.update = function() {
 
 };
 
+Bear.prototype.detectPlayer = function () {
+    return true;
+};
+
+Bear.prototype.followPlayer = function () {
+
+};
+
+Bear.prototype.idleLoop = function () {
+
+};
+
+Bear.prototype.walkRight = function() {
+    this.animations.play('walkRight', 10, true);
+    this.body.velocity.x = 65;
+};
+
+Bear.prototype.walkLeft = function() {
+    this.animations.play('walkLeft', 10, true);
+    this.body.velocity.x = -65;
+};
+
+Bear.prototype.walkUp = function() {
+    if (this.facingRight()) {
+        this.animations.play('walkRight');
+    } else if (this.facingLeft()) {
+        this.animations.play('walkLeft');
+    }
+    this.body.velocity.y = -65;
+};
+
+Bear.prototype.walkDown = function() {
+    if (this.facingRight()) {
+        this.animations.play('walkRight');
+    } else if (this.facingLeft()) {
+        this.animations.play('walkLeft');
+    }
+    this.body.velocity.y = 65;
+
+};
+
+Bear.prototype.facingRight = function() {
+    return this.animations.currentAnim.name === 'faceRight' ||
+        this.animations.currentAnim.name === 'walkRight';
+};
+
+Bear.prototype.facingLeft = function() {
+    return this.animations.currentAnim.name === 'faceLeft' ||
+        this.animations.currentAnim.name === 'walkLeft';
+};
+
 module.exports = Bear;
 
 },{}],3:[function(require,module,exports){
+'use strict';
+
+var Boundary = function(game, xOffset, yOffset, frame) {
+    Phaser.Sprite.call(this, game, 0, 0, 'boundary', frame);
+    this.game.physics.arcade.enableBody(this);
+    this.body.allowGravity = false;
+    this.body.immovable = true;
+    this.fixedToCamera = true;
+    this.cameraOffset.setTo(xOffset,yOffset);
+
+};
+
+Boundary.prototype = Object.create(Phaser.Sprite.prototype);
+Boundary.prototype.constructor = Boundary;
+
+Boundary.prototype.update = function() {
+
+  // write your prefab's specific update code here
+
+};
+
+module.exports = Boundary;
+
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var Dialogue = function(game, x, y, style, textList) {
@@ -93,7 +168,7 @@ Dialogue.prototype.start = function () {
 
 module.exports = Dialogue;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 var FadingImage = function(game, x, y, name, frame) {
@@ -143,7 +218,7 @@ FadingImage.prototype.prevFrame = function () {
 
 module.exports = FadingImage;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var Player = function(game, x, y, frame) {
@@ -156,6 +231,8 @@ var Player = function(game, x, y, frame) {
     this.animations.add('faceLeft', [5]);
     this.animations.add('walkRight', [1,2]);
     this.animations.add('walkLeft', [3,4]);
+
+    this.game.add.existing(this);
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -222,7 +299,7 @@ Player.prototype.stopY = function() {
 
 module.exports = Player;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 'use strict';
 
@@ -241,7 +318,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
   function Credits() {}
   Credits.prototype = {
@@ -269,7 +346,7 @@ module.exports = Boot;
   };
 module.exports = Credits;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
   function Ending() {}
   Ending.prototype = {
@@ -297,7 +374,7 @@ module.exports = Credits;
   };
 module.exports = Ending;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
 var Dialogue = require('../prefabs/dialogue');
@@ -352,10 +429,11 @@ var Dialogue = require('../prefabs/dialogue');
   };
 module.exports = Intro;
 
-},{"../prefabs/dialogue":3,"../prefabs/fadingImage":4}],10:[function(require,module,exports){
+},{"../prefabs/dialogue":4,"../prefabs/fadingImage":5}],11:[function(require,module,exports){
 'use strict';
 var Player = require('../prefabs/player');
 var Bear = require('../prefabs/bear');
+var Boundary = require('../prefabs/boundary');
 
   function Level() {}
   Level.prototype = {
@@ -370,20 +448,39 @@ var Bear = require('../prefabs/bear');
                                           81, 82, 83, 84, 85]);
 
         this.player = new Player(this.game, 50, 50);
-        this.game.add.existing(this.player);
-        this.game.camera.follow(this.player);
 
         this.bear = new Bear(this.game, 100, 100);
         this.game.add.existing(this.bear);
 
+        this.rightBoundary = new Boundary(this.game, 256, 0);
+        this.leftBoundary = new Boundary(this.game, -1, 0);
+        this.game.add.existing(this.rightBoundary);
+        this.game.add.existing(this.leftBoundary);
+
         this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
+
+        this.game.camera.follow(this);
     },
     update: function() {
 
         this.game.physics.arcade.collide(this.player, this.layer);
+        this.game.physics.arcade.collide(this.player, this.bear);
+        this.game.physics.arcade.collide(this.player, this.rightBoundary);
+        this.game.physics.arcade.collide(this.player, this.leftBoundary);
 
+        // if player is near bear, tell bear to go to player
+        if (this.bear.detectPlayer()) {
+            this.bear.followPlayer();
+        } else {
+            this.bear.idleLoop();
+        }
+
+        // if camera gets to certain point, stop following player
+
+
+        // player controls
         if (this.cursors.right.isDown) {
             this.player.walkRight();
         } else if (this.cursors.left.isDown) {
@@ -414,7 +511,7 @@ var Bear = require('../prefabs/bear');
   };
 module.exports = Level;
 
-},{"../prefabs/bear":2,"../prefabs/player":5}],11:[function(require,module,exports){
+},{"../prefabs/bear":2,"../prefabs/boundary":3,"../prefabs/player":6}],12:[function(require,module,exports){
 'use strict';
 
 var AssetLoader = (function () {
@@ -471,7 +568,7 @@ Preload.prototype = {
                     { name: 'intro-figure', w: 256, h: 224, frames: 3 },
                     { name: 'player', w: 24, h: 32, frames: 6 },
                     { name: 'bear', w: 32, h: 24, frames: 4 } ];
-    var images = [ 'forest' ];
+    var images = [ 'forest', 'boundary' ];
     var maps = [ 'forest' ];
     AssetLoader.loadSprites.call(this, sprites);
     AssetLoader.loadImages.call(this, images);
@@ -492,7 +589,7 @@ Preload.prototype = {
 
 module.exports = Preload;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 var FadingImage = require('../prefabs/fadingImage');
 
@@ -539,4 +636,4 @@ var FadingImage = require('../prefabs/fadingImage');
   };
 module.exports = Title;
 
-},{"../prefabs/fadingImage":4}]},{},[1])
+},{"../prefabs/fadingImage":5}]},{},[1])

@@ -1,6 +1,7 @@
 'use strict';
 var Player = require('../prefabs/player');
 var Bear = require('../prefabs/bear');
+var Boundary = require('../prefabs/boundary');
 
   function Level() {}
   Level.prototype = {
@@ -15,20 +16,39 @@ var Bear = require('../prefabs/bear');
                                           81, 82, 83, 84, 85]);
 
         this.player = new Player(this.game, 50, 50);
-        this.game.add.existing(this.player);
-        this.game.camera.follow(this.player);
 
         this.bear = new Bear(this.game, 100, 100);
         this.game.add.existing(this.bear);
 
+        this.rightBoundary = new Boundary(this.game, 256, 0);
+        this.leftBoundary = new Boundary(this.game, -1, 0);
+        this.game.add.existing(this.rightBoundary);
+        this.game.add.existing(this.leftBoundary);
+
         this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
+
+        this.game.camera.follow(this);
     },
     update: function() {
 
         this.game.physics.arcade.collide(this.player, this.layer);
+        this.game.physics.arcade.collide(this.player, this.bear);
+        this.game.physics.arcade.collide(this.player, this.rightBoundary);
+        this.game.physics.arcade.collide(this.player, this.leftBoundary);
 
+        // if player is near bear, tell bear to go to player
+        if (this.bear.detectPlayer()) {
+            this.bear.followPlayer();
+        } else {
+            this.bear.idleLoop();
+        }
+
+        // if camera gets to certain point, stop following player
+
+
+        // player controls
         if (this.cursors.right.isDown) {
             this.player.walkRight();
         } else if (this.cursors.left.isDown) {

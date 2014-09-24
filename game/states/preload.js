@@ -54,7 +54,7 @@ Preload.prototype = {
                     { name: 'intro-figure', w: 256, h: 224, frames: 3 },
                     { name: 'player', w: 24, h: 32, frames: 6 },
                     { name: 'bear', w: 32, h: 24, frames: 4 } ];
-    var images = [ 'forest' ];
+    var images = [ 'forest', 'boundary' ];
     var maps = [ 'forest' ];
     AssetLoader.loadSprites.call(this, sprites);
     AssetLoader.loadImages.call(this, images);
