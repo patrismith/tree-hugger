@@ -52,7 +52,7 @@ Preload.prototype = {
                     { name: 'title-treehugger', w: 160, h: 40, frames: 3 },
                     { name: 'title-pressspace', w: 88, h: 16, frames: 3 },
                     { name: 'intro-figure', w: 256, h: 224, frames: 3 },
-                    { name: 'player', w: 24, h: 32, frames: 6 },
+                    { name: 'player', w: 24, h: 32, frames: 12 },
                     { name: 'bear', w: 32, h: 24, frames: 4 } ];
     var images = [ 'forest', 'boundary' ];
     var maps = [ 'forest' ];
